@@ -5,21 +5,15 @@ $(function() {
         var self = this;
 
         self.mainPowerOn = function() {
-        	alert("on123")
         	OctoPrint.simpleApiCommand(me, "POWER_ON", {})
-        	alert("on456")
         };
         
         self.mainPowerOff = function() {
-        	alert("off")
         	OctoPrint.simpleApiCommand(me, "POWER_OFF", {})
-        	alert("off")
         };
         
         self.eStop = function() {
-        	alert("emergency stop!")
         	OctoPrint.simpleApiCommand(me, "POWER_OFF", {})
-        	alert("emergency stop!")
         };
 
         self.onBeforeBinding = function() {

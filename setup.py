@@ -33,7 +33,7 @@ plugin_url = "https://github.com/TheWug/relaycontrol"
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ["RPi.GPIO", "lgpio", "gpiozero"]
+plugin_requires = ["RPi.GPIO", "gpiozero"]
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point
