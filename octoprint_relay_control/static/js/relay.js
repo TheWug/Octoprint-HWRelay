@@ -3,6 +3,9 @@ const me = "relay_control" // value of plugin_identifier in setup.py
 $(function() {
     function RelayControlViewModel(parameters) {
         var self = this;
+        
+        self.canTurnOn = ko.observable(true)
+        self.canTurnOff = ko.observable(true)
 
         self.mainPowerOn = function() {
         	OctoPrint.simpleApiCommand(me, "POWER_ON", {})
@@ -17,6 +20,13 @@ $(function() {
         };
 
         self.onBeforeBinding = function() {
+        }
+        
+        self.onDataUpdaterPluginMessage = function (plugin, data) {
+        	if (plugin == me) {
+        		self.canTurnOn(data.canTurnOn)
+        		self.canTurnOff(data.canTurnOff)
+        	}
         }
     }
 
