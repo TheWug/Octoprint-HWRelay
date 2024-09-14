@@ -78,8 +78,8 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		already_on = self.mainRelay.isOn()
 		shutdownAllowed = self._printer.get_state_id() in ["OPERATIONAL", "OFFLINE", "NONE", "CLOSED", "CLOSED_WITH_ERROR"]
 		self._plugin_manager.send_plugin_message(me, {
-			canTurnOn: not already_on,
-			canTurnOff: already_on and shutdownAllowed
+			"canTurnOn": not already_on,
+			"canTurnOff": already_on and shutdownAllowed
 		})
 
 __plugin_implementation__ = RelayControlPlugin()
