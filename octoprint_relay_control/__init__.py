@@ -28,7 +28,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 
 	def toggle_main_relay(self, target: Optional[bool] = None) -> bool:
 		if target is None:
-			target = not mainRelay.isOn()
+			target = not self.mainRelay.isOn()
 
 		if target is not True:
 			if self._printer.is_operational():
@@ -39,9 +39,9 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		)
 
 		if target:
-			mainRelay.turnOn()
+			self.mainRelay.turnOn()
 		else:
-			mainRelay.turnOff()
+			self.mainRelay.turnOff()
 
 		self.update_button_state()
 		return target
@@ -70,7 +70,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			mainRelay.assignState(true)
 			self.update_button_state()
 		elif event == "PrinterStateChanged":
-			self.shutdownAllowed = payload.state_id in ["OPERATIONAL", "OFFLINE", "NONE", "CLOSED", "CLOSED_WITH_ERROR"]
+			self.shutdownAllowed = payload.get('state_id') in ["OPERATIONAL", "OFFLINE", "NONE", "CLOSED", "CLOSED_WITH_ERROR"]
 			self.update_button_state()
 
 	def update_button_state(self):
