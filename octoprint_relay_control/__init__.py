@@ -6,6 +6,9 @@ from .relay import BistableRelay
 me = "relay_control" # value of plugin_identifier in setup.py
 
 class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.AssetPlugin, octoprint.plugin.TemplatePlugin, octoprint.plugin.SimpleApiPlugin, octoprint.plugin.StartupPlugin, octoprint.plugin.EventHandlerPlugin):
+	def __init__(self):
+		self.mainRelay = None
+
 	def get_main_relay(self):
 		if self.mainRelay is None:
 			main_settings = self._settings.get(["main_relay"], merged=True)
