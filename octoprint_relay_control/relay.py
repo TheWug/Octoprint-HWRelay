@@ -31,7 +31,7 @@ class BistableRelay(Relay):
 		self.memory = None
 		self.inverted = inverted
 		self.handleOn = gpiozero.LED(pin=pinOn, active_high=not inverted, initial_value=False)
-		self.handleOff = gpiozero.LED(pin=pinOn, active_high=not inverted, initial_value=False)
+		self.handleOff = gpiozero.LED(pin=pinOff, active_high=not inverted, initial_value=False)
 		
 		if setState is True:
 			self.turnOn()
