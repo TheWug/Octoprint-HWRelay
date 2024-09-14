@@ -79,6 +79,8 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			self.update_button_state()
 		elif event == Events.PRINTER_STATE_CHANGED:
 			self.update_button_state()
+		elif event == Events.CLIENT_AUTHED:
+			self.update_button_state()
 
 	def update_button_state(self):
 		mainRelay = self.get_main_relay()
