@@ -1,4 +1,5 @@
 import octoprint.plugin
+from octoprint.events import Events
 from typing import Optional
 
 from .relay import BistableRelay
@@ -68,7 +69,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		self.update_button_state()
 
 	def on_event(self, event, payload):
-		if event == "Connected":
+		if event == Events.CONNECTED:
 			main_settings = self._settings.get(["main_relay"], merged=True)
 			pinOn = int(main_settings["gpio_set"])
 			pinOff = int(main_settings["gpio_reset"])
@@ -76,7 +77,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			mainRelay = self.get_main_relay()
 			mainRelay.assignState(true)
 			self.update_button_state()
-		elif event == "PrinterStateChanged":
+		elif event == Events.PRINTER_STATE_CHANGED:
 			self.update_button_state()
 
 	def update_button_state(self):
