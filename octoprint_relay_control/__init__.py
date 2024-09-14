@@ -6,13 +6,14 @@ from .relay import BistableRelay
 me = "relay_control" # value of plugin_identifier in setup.py
 
 class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.AssetPlugin, octoprint.plugin.TemplatePlugin, octoprint.plugin.SimpleApiPlugin, octoprint.plugin.StartupPlugin, octoprint.plugin.EventHandlerPlugin):
-	def __init__(self):
-		main_settings = self._settings.get(["main_relay"], merged=True)
-		pinOn = int(main_settings["gpio_set"])
-		pinOff = int(main_settings["gpio_reset"])
-		inverted = bool(main_settings["inverted"])
-		self.mainRelay = BistableRelay.ensure("main", pinOn, pinOff, inverted, assumeState=False)
-		self.shutdownAllowed = True
+	def get_main_relay(self):
+		if self.mainRelay is None:
+			main_settings = self._settings.get(["main_relay"], merged=True)
+			pinOn = int(main_settings["gpio_set"])
+			pinOff = int(main_settings["gpio_reset"])
+			inverted = bool(main_settings["inverted"])
+			self.mainRelay = BistableRelay.ensure("main", pinOn, pinOff, inverted, assumeState=False)
+		return self.mainRelay
 
 	def get_settings_defaults(self):
 		return {"main_relay": {"gpio_set": 17, "gpio_reset": 27, "inverted": False}}
@@ -35,8 +36,9 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			raise Exception("unexpected command")
 
 	def toggle_main_relay(self, target: Optional[bool] = None) -> bool:
+		mainRelay = self.get_main_relay()
 		if target is None:
-			target = not self.mainRelay.isOn()
+			target = not mainRelay.isOn()
 
 		if target is not True:
 			if self._printer.is_operational():
@@ -47,9 +49,9 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		)
 
 		if target:
-			self.mainRelay.turnOn()
+			mainRelay.turnOn()
 		else:
-			self.mainRelay.turnOff()
+			mainRelay.turnOff()
 
 		self.update_button_state()
 		return target
@@ -68,14 +70,15 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			pinOn = int(main_settings["gpio_set"])
 			pinOff = int(main_settings["gpio_reset"])
 			inverted = bool(main_settings["inverted"])
-			mainRelay = BistableRelay.ensure("main", pinOn, pinOff, inverted, assumeState=False)
+			mainRelay = self.get_main_relay()
 			mainRelay.assignState(true)
 			self.update_button_state()
 		elif event == "PrinterStateChanged":
 			self.update_button_state()
 
 	def update_button_state(self):
-		already_on = self.mainRelay.isOn()
+		mainRelay = self.get_main_relay()
+		already_on = mainRelay.isOn()
 		shutdownAllowed = self._printer.get_state_id() in ["OPERATIONAL", "OFFLINE", "NONE", "CLOSED", "CLOSED_WITH_ERROR"]
 		self._plugin_manager.send_plugin_message(me, {
 			"canTurnOn": not already_on,
