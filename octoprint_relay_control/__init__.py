@@ -13,14 +13,16 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			"POWER_OFF": [],
 		}
 
-	def on_api_get(self, command, data):
-		self.on_api_command(command, data)
+	def on_api_get(self, req):
+		self.on_api_command(req, None)
 
-	def on_api_command(self, command, data):
+	def on_api_command(self, command, data=None):
 		if command == "POWER_ON":
 			self.toggle_main_relay(True)
 		elif command == "POWER_OFF":
 			self.toggle_main_relay(False)
+		else:
+			raise Exception("unexpected command")
 		
 	def toggle_main_relay(self, target: Optional[bool] = None) -> bool:
 		main_settings = self._settings.get(["main_relay"], merged=True)
