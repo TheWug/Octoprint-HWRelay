@@ -25,7 +25,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 			self.toggle_main_relay(False)
 		else:
 			raise Exception("unexpected command")
-		
+
 	def toggle_main_relay(self, target: Optional[bool] = None) -> bool:
 		if target is None:
 			target = not mainRelay.isOn()
@@ -37,7 +37,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		self._logger.info(
 			f"Turning the main relay {'ON' if target else 'OFF'}"
 		)
-		
+
 		if target:
 			mainRelay.turnOn()
 		else:
@@ -50,7 +50,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		return {
 			"js": ["js/relay.js"]
 		}
-		
+
 	def on_startup(self, host, port):
 		main_settings = self._settings.get(["main_relay"], merged=True)
 		pinOn = int(main_settings["gpio_set"])
@@ -59,7 +59,7 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		self.mainRelay = BistableRelay.ensure("main", pinOn, pinOff, inverted, assumeState=False)
 		self.shutdownAllowed = True
 		self.update_button_state()
-		
+
 	def on_event(self, event, payload):
 		if event == "Connected":
 			main_settings = self._settings.get(["main_relay"], merged=True)
@@ -72,14 +72,13 @@ class RelayControlPlugin(octoprint.plugin.SettingsPlugin, octoprint.plugin.Asset
 		elif event == "PrinterStateChanged":
 			self.shutdownAllowed = payload.state_id in ["OPERATIONAL", "OFFLINE", "NONE", "CLOSED", "CLOSED_WITH_ERROR"]
 			self.update_button_state()
-			
+
 	def update_button_state(self):
 		already_on = self.mainRelay.isOn()
 		self._plugin_manager.send_plugin_message(me, {
 			canTurnOn: not already_on,
 			canTurnOff: already_on and self.shutdownAllowed
 		})
-			
 
 __plugin_implementation__ = RelayControlPlugin()
 __plugin_pythoncompat__ = ">=3.7,<4"
